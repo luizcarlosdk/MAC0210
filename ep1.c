@@ -4,7 +4,7 @@
 
 double g1(double x) {
     double y = x + (exp(x) - 2* pow(x,2));
-    return y; 
+    return y;
 }
 
 double g2(double x) {
@@ -30,7 +30,7 @@ int main() {
     x2 = g2(root1);
     x3 = g3(root2);
 
-    for (i=0; i =! 100; i++) {
+    for (i=0; i != 100; i++) {
         x1 = g1(x1);
         x2 = g2(x2);
         x3 = g3(x3);
