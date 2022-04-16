@@ -25,12 +25,12 @@ int main() {
     printf("Digite o valor de x0 para a segunda raiz: ");
     scanf("%lf",&root1);
     printf("Digite o valor de x0 para a terceira raiz: ");
-    scanf("%d",&root2);
+    scanf("%lf",&root2);
     x1 = g1(root0);
     x2 = g2(root1);
     x3 = g3(root2);
 
-    for (i=0; i =! 40; i++) {
+    for (i=0; i =! 100; i++) {
         x1 = g1(x1);
         x2 = g2(x2);
         x3 = g3(x3);
