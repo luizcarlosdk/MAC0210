@@ -19,36 +19,37 @@ bool hasConverged(double x1, double x2) {
     return fabs(x1 - x2) < relTol * fabs(x1);
 }
 
-double fixedPoint(double x0, double (*f)(double)) {
+struct FixedPointResult {
+    double result;
+    bool exceededIterations;
+};
+
+struct FixedPointResult fixedPoint(double x0, double (*f)(double)) {
     double x = f(x0);
     double prevX = x0;
-    bool endedGracefully = false;
+    bool exceededIterations = true;
     for (int i = 0; i < maxIter; i++) {
         prevX = x;
         x = f(x);
 
         if (isnan(x) || isinf(x)) {
+            exceededIterations = false;
             break;
         }
 
         if (hasConverged(prevX, x)) {
-            endedGracefully = true;
+            exceededIterations = false;
             break;
         }
     }
 
-    // TODO: como detectar o erro IterationsExceeded?
+    struct FixedPointResult result = {.result = x,
+                                      .exceededIterations = exceededIterations};
 
-    return x;
+    return result;
 }
 
-enum Status {
-    Pending,
-    Success,
-    IterationsExceeded,
-    Overflow,
-    DivisionByZero
-};
+enum Status { Pending, Success, IterationsExceeded, Overflow, DivisionByZero };
 
 struct RootStruct {
     double x0;
@@ -58,7 +59,10 @@ struct RootStruct {
 };
 
 void printResult(int rootIndex, double x, enum Status status) {
-    if (status == IterationsExceeded) {
+    if (status == DivisionByZero) {
+        printf("Erro: O cálculo da raiz %d passou por uma divisão por zero.\n",
+               rootIndex);
+    } else if (status == IterationsExceeded) {
         printf("Erro: O cálculo da raiz %d excedeu o limite de iterações.\n",
                rootIndex);
     } else if (status == Overflow) {
@@ -98,7 +102,7 @@ void askPoints(struct RootStruct *roots, int rootsLength) {
 
     for (int i = 0; i < rootsLength; i++) {
         printf("Qual o valor do ponto inicial da raiz %d?\n"
-               "(deixe vazio para usar o padrão %f)\n\n",
+               "(deixe vazio para usar o padrão %f)\n",
                i, roots[i].x0);
 
         char input[128];
@@ -106,14 +110,20 @@ void askPoints(struct RootStruct *roots, int rootsLength) {
         if (input[0] != '\n') {
             roots[i].x0 = strtod(input, NULL);
         }
-    }
 
-    printf("\n");
+        printf("\n");
+    }
 }
 
 void calculateRoots(struct RootStruct *roots, int rootsLength) {
     for (int i = 0; i < rootsLength; i++) {
-        roots[i].result = fixedPoint(roots[i].x0, roots[i].g);
+        struct FixedPointResult result = fixedPoint(roots[i].x0, roots[i].g);
+        if (result.exceededIterations) {
+            roots[i].status = IterationsExceeded;
+            continue;
+        }
+
+        roots[i].result = result.result;
         if (isinf(roots[i].result)) {
             roots[i].status = Overflow;
         } else if (isnan(roots[i].result)) {
