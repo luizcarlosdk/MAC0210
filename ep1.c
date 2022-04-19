@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <complex.h>
 #include <math.h>
+<<<<<<< Updated upstream
 
 double g1(double x) {
     double y = x + (exp(x) - 2* pow(x,2));
@@ -17,6 +18,77 @@ double g3(double x) {
     return y;
 }
 
+=======
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "rootStruct.h"
+
+#define MAX_ITER 100
+#define REL_TOL 0.001
+int maxIter = MAX_ITER;
+double relTol = REL_TOL;
+
+double g1(double x) { return x + (exp(x) - 2 * pow(x, 2)); }
+
+double g2(double x) { return -sqrt(exp(x) / 2); }
+
+double g3(double x) { return x - (exp(x) - 2 * pow(x, 2)) / (exp(x) - 4 * x); }
+
+bool hasConverged(double x1, double x2) {
+    return fabs(x1 - x2) < relTol * fabs(x1);
+}
+
+struct FixedPointResult {
+    double result;
+    bool exceededIterations;
+};
+
+struct FixedPointResult fixedPoint(double x0, double (*f)(double)) {
+    double x = f(x0);
+    double prevX = x0;
+    bool exceededIterations = true;
+    for (int i = 0; i < maxIter; i++) {
+        prevX = x;
+        x = f(x);
+
+        if (isnan(x) || isinf(x)) {
+            exceededIterations = false;
+            break;
+        }
+
+        if (hasConverged(prevX, x)) {
+            exceededIterations = false;
+            break;
+        }
+    }
+
+    struct FixedPointResult result = {.result = x,
+                                      .exceededIterations = exceededIterations};
+
+    return result;
+}
+
+void calculateRoots(struct RootStruct *roots, int rootsLength) {
+    for (int i = 0; i < rootsLength; i++) {
+        struct FixedPointResult result = fixedPoint(roots[i].x0, roots[i].g);
+        if (result.exceededIterations) {
+            roots[i].status = IterationsExceeded;
+            continue;
+        }
+
+        roots[i].result = result.result;
+        if (isinf(roots[i].result)) {
+            roots[i].status = Overflow;
+        } else if (isnan(roots[i].result)) {
+            roots[i].status = DivisionByZero;
+        } else {
+            roots[i].status = Success;
+        }
+    }
+}
+
+>>>>>>> Stashed changes
 int main() {
     double x1,x2,x3;
     double root0,root1,root2,i;
