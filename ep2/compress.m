@@ -1,3 +1,4 @@
+"OI"
 function compress(originalImg, k)
   image = imread(originalImg);
   p = size(image)(1)
@@ -22,3 +23,5 @@ function compress(originalImg, k)
   endfor
   imwrite (uint8(solution), "compressed.png", "Compression", "none");
 endfunction
+
+compress("/home/luizz/Documents/materias/MAC0210/ep2/anime.jpg",5)
