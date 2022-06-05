@@ -14,7 +14,6 @@ endfunction
 function result = remove_pixels(img, k)
   p = size(img)(1);
   n = floor((p + k)/(1+k));
-  p = n + (n-1)*k;
   discardIndexes = [];
 
   for i = 1:p
