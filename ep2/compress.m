@@ -6,7 +6,7 @@ function result = compress(originalImg, k)
     img = 255 * ind2rgb(img, colorMap);
   endif
 
-  result = remove_pixels(img, k)
+  result = remove_pixels(img, k);
 
   imwrite(uint8(result), "compressed.png", "Quality", 100);
 endfunction
