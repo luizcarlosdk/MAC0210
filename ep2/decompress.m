@@ -27,12 +27,12 @@ function decompress(compressedImg, method, k, h)
     iCompressed++;
   endfor
 
-  for i = 10:rows(result)-10
-    for j = 10:columns(result)-10
+  for i = 1:rows(result)
+    for j = 1:columns(result)
       if (isUnknownPoint(i, j, k))
-        result(i,j,1) = bilinear(result(:,:,1), h, i, j);
-        result(i,j,2) = bilinear(result(:,:,2), h, i, j);
-        result(i,j,3) = bilinear(result(:,:,3), h, i, j);
+        result(i,j,1) = bilinear(result(:,:,1), k, h, i, j);
+        result(i,j,2) = bilinear(result(:,:,2), k, h, i, j);
+        result(i,j,3) = bilinear(result(:,:,3), k, h, i, j);
       endif
     endfor
   endfor

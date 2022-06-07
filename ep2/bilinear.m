@@ -1,13 +1,14 @@
-function result = bilinear(img, h, i, j)
+function result = bilinear(img, k, h, x, y)
   function pixel = p(point)
     pixel = img(point(1), point(2));
   endfunction
 
-  h2 = floor(h/2);
-  lowerLeft = [i+h2, j-h2];
-  lowerRight = [i+h2, j+h2];
-  upperLeft = [i-h2, j-h2];
-  upperRight = [i-h2, j+h2];
+  [
+    lowerLeft, ...
+    lowerRight, ...
+    upperLeft, ...
+    upperRight
+  ] = getSquare(size(img)(1), k, h, x, y);
 
   f = [p(lowerLeft); p(lowerRight); p(upperLeft); p(upperRight)];
   m = [
@@ -21,8 +22,29 @@ function result = bilinear(img, h, i, j)
 
   result = (
     a(1)
-    + a(2) * (i - lowerLeft(1))
-    + a(3) * (j - lowerLeft(2))
-    + a(4) * (i - lowerLeft(1)) * (j - lowerLeft(2))
+    + a(2) * (x - lowerLeft(1))
+    + a(3) * (y - lowerLeft(2))
+    + a(4) * (x - lowerLeft(1)) * (y - lowerLeft(2))
   );
+
+endfunction
+
+function [lowerLeft, lowerRight, upperLeft, upperRight] = getSquare(n, k, h, x, y)
+  step = k + 1;
+  if (x == n)
+    i = n;
+  else
+    i = step * (max(floor(x/step), 1)) + 1;
+  endif
+
+  if (y == n)
+    j = n - step;
+  else
+    j = step * (max(floor(y/step), 1) - 1) + 1;
+  endif
+
+  lowerLeft = [i, j];
+  lowerRight = [i, j+step];
+  upperLeft = [i-step, j];
+  upperRight = [i-step, j+step];
 endfunction
